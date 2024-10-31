@@ -41,5 +41,45 @@ server.listen(3000, function () {
 
 // Socket.io handles connection event
 io.on("connection", function (socket) {
-  console.log("New user connected");
+  // console.log("New user connected");
+  // console.log(socket);
+
+//   socket.on("request to backend", function () {
+//     // console.log("event received");
+//     io.emit("respond from backend");
+//   });
+
+    // socket.on("disconnect", function () {
+    //     console.log("socket disconnected");
+    // })
+
+    // Server assigns role based on availability:
+    // - If slots empty:
+        // - Assign role (white/black)
+        // - Inform player
+    // - If slots full:
+        // - Designate as spectator
+    if( !players.white ) {
+        // console.log(socket.id)
+        players.white = socket.id;
+        socket.emit();
+    }
+    else if( !players.black ) {
+        players.black = socket.id;
+        socket.emit();
+    }
+    else {
+        socket.emit("Role: Spectator");
+    }
+
+    // Client disconnection:
+    // - Remove assigned role from players object
+    socket.on("disconnect", function() {
+        if(players.white === socket.id) {
+            delete players.white;
+        }
+        else if(players.black === socket.id) {
+            delete players.black;
+        }
+    });
 });
