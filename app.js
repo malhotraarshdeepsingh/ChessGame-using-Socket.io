@@ -82,4 +82,24 @@ io.on("connection", function (socket) {
             delete players.black;
         }
     });
+
+    socket.on('move', function(move) {
+        try {
+            if(chess.turn() === 'w' && socket.id !== players.white) return;
+            if(chess.turn() === 'b' && socket.id!== players.black) return;
+
+            const result = chess.move(move);
+            if(result) {
+                currentPlayer = chess.turn();
+                io.emit("move", move);
+                io.emit("boardState", chess.fen());
+            }
+            else {
+                socket.emit("invalidMove: ", move);
+            }
+        } catch (error) {
+            console.log(error);
+            socket.emit("invalidMove");
+        }
+    });
 });
